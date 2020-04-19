@@ -20,5 +20,12 @@ cargo build --release
 ## How to use
 
 The program has two subcommands: `simulate` and `peaks`.
+
 The `simulate` subcommand generates a solution of the SIR model.
+The numerical solution is executed with the fourth order Runge-Kutta method.
+The step size is selected automatically depending on the total population.
+The program prints the values of S, I, and R at every 0.1 unit of time.
+The unit of time depends on the unit of the parameter γ.
+The dimension of γ is the inverse of the unit of time.
+
 The `peaks` subcommand computes the peak values of the infectious population of solutions.

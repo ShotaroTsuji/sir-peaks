@@ -4,7 +4,7 @@ use structopt::StructOpt;
 
 #[derive(Debug,Clone,StructOpt)]
 enum Opt {
-    /// Produce a numerical solution of the SIR model
+    /// Produce a numerical solution of the SIR model.
     Simulate {
         /// The value of the parameter λ
         #[structopt(long,short)]
@@ -37,12 +37,27 @@ enum Opt {
 }
 
 fn simulate(l: f64, g: f64, i: f64, n: f64) {
-    let dt = 0.01 / n;
+    let e = n.log10().floor();
+    let s = n / 10.0_f64.powf(e);
+    let s = s.floor();
+    let dt = 0.01 / (s * 10.0_f64.powf(e));
+    let print_interval = (s * 10.0_f64.powf(e+1.0)) as usize;
+    eprintln!("dt = {}", dt);
+
     let eom = sir_peaks::SirModel { lambda: l, gamma: g };
     let mut teo = eom::explicit::RK4::new(eom, dt);
     let ts = eom::adaptor::time_series(arr1(&[n-i, i, 0.0]), &mut teo);
+    let mut counter = 0;
     for v in ts.take_while(|v| v[1] > i/10.0) {
-        println!("{} {} {}",v[0], v[1], v[2]);
+        if counter == 0 {
+            println!("{} {} {}",v[0], v[1], v[2]);
+        }
+
+        if counter == print_interval-1 {
+            counter = 0;
+        } else {
+            counter = counter + 1;
+        }
     }
 }
 
